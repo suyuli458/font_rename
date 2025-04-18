@@ -1,0 +1,30 @@
+name: Rename Fonts
+
+on:
+  push:
+    paths:
+      - 'input_fonts/**.ttf'
+
+jobs:
+  rename:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install fontTools
+        run: pip install fonttools
+
+      - name: Run rename script
+        run: python font_rename.py
+
+      - name: Upload output fonts
+        uses: actions/upload-artifact@v4
+        with:
+          name: renamed-fonts
+          path: output_fonts/
