@@ -1,4 +1,4 @@
-name: Rename Fonts
+name: Rename Fonts and Push
 
 on:
   push:
@@ -6,8 +6,9 @@ on:
       - 'input_fonts/**.ttf'
 
 jobs:
-  rename:
+  rename-and-commit:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,8 +24,10 @@ jobs:
       - name: Run rename script
         run: python font_rename.py
 
-      - name: Upload output fonts
-        uses: actions/upload-artifact@v4
-        with:
-          name: renamed-fonts
-          path: output_fonts/
+      - name: Commit and push output fonts
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add output_fonts/
+          git commit -m "Auto update output fonts on push" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }}
